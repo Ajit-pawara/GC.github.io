@@ -28,37 +28,33 @@
     }
 
     /* Header with special effects */
-    h1 {
-      margin-top: 10px;
-      color: #4169E1; /* Bright green text for high visibility */
-      font-size: 1.5em;
-      font-weight: bold;
-      text-align: center;
-      background-color: #000000;
-      border: 2px solid #2C2C2C;
-      border-radius: 10px;
-      padding: 10px 20px;
-      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9);
-      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4);
-      white-space: nowrap;
-      overflow: hidden;
-      display: inline-block;
-      position: relative;
-    }
+h1 {
+  margin-top: 10px;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  background: linear-gradient(45deg, #ff6f00, #ff1493, #4169E1, #32cd32);
+  -webkit-background-clip: text;
+  color: transparent;
+  border: 2px solid #333; /* Blackish border */
+  border-radius: 10px;
+  padding: 15px 20px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5), -5px -5px 15px rgba(0, 0, 0, 0.7);
+  text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.1); /* 10% transparent black */
+  animation: gradientAnimation 5s ease infinite;
+}
 
-    h1 span {
-      display: inline-block;
-      animation: scrollText 10s linear infinite;
-    }
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    @keyframes scrollText {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
-    }
 
     /* Scoreboard Styling */
     .scoreboard {
@@ -69,7 +65,13 @@
       padding: 20px;
       background: rgba(0, 0, 0, 0.9);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Hover Effect for Scoreboard */
+    .scoreboard:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
     }
 
     /* Dark Mode Scoreboard */
@@ -114,8 +116,7 @@
     .admin-section {
       position: fixed;
       bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 10px; /* Positioned at bottom left */
       width: 220px;
       background: rgba(0, 0, 0, 0.9);
       border-radius: 10px;
@@ -123,7 +124,6 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
       color: #fff;
       font-size: 0.8em;
-      transition: background-color 0.3s ease;
     }
 
     /* Light Mode Admin Section */
@@ -223,7 +223,7 @@
     <!-- Teams and points will be dynamically inserted here -->
   </div>
 
-  <!-- Admin Panel -->
+  <!-- Admin Panel (Fixed at bottom left) -->
   <div class="admin-section" id="admin-section">
     <h2>Admin Login</h2>
     <input type="password" id="adminPassword" placeholder="Enter Admin Password">
@@ -264,7 +264,6 @@
         teamDiv.className = 'team';
         teamDiv.innerHTML = `
           <div class="team-name">
-            <img src="${team.logo}" alt="${team.name} logo" class="team-logo"> 
             ${index + 1}. ${team.name}
           </div>
           <span class="team-points">${team.points} pts</span>
@@ -325,3 +324,4 @@
   </script>
 </body>
 </html>
+
