@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GCEK GC Scoreboard</title>
+  <title>GCEK GC scoreboard</title>
   <style>
     /* General Body Styling */
     body {
@@ -15,42 +15,48 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      background: url('college.png') no-repeat center center fixed;
+      background: url('college.png') no-repeat center center fixed; /* Background image */
       background-size: cover;
     }
 
     /* Header with special effects */
-    h1 {
-      margin-top: 10px;
-      color: #4169E1;
-      font-size: 1.5em;
-      font-weight: bold;
-      text-align: center;
-      background-color: #000000;
-      border: 2px solid #2C2C2C;
-      border-radius: 10px;
-      padding: 10px 20px;
-      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9);
-      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4);
-      white-space: nowrap;
-      overflow: hidden;
-      display: inline-block;
-      position: relative;
-    }
 
-    h1 span {
-      display: inline-block;
-      animation: scrollText 10s linear infinite;
-    }
+h1 {
+  margin-top: 10px; /* Reduced margin to move the text higher */
+  color:#4169E1 ; /* Bright green text for high visibility */
+  font-size: 1.5em; /* Smaller font size for more compact text */
+  font-weight: bold; /* Bold text for emphasis */
+  text-align: center;
+  background-color: #000000; /* Light black background */
+  border: 2px solid #2C2C2C; /* Light black border to match the background */
+  border-radius: 10px; /* Rounded corners for a smooth, clean look */
+  padding: 10px 20px; /* Reduced padding to make the box smaller */
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9); /* 3D box shadow */
+  text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4); /* 3D text shadow */
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden; /* Hides text overflow */
+  display: inline-block; /* Keeps the box fixed while text scrolls */
+  position: relative; /* Ensures the box remains in place */
+}
 
-    @keyframes scrollText {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
-    }
+h1 span {
+  display: inline-block; /* Needed for the scrolling effect */
+  animation: scrollText 10s linear infinite; /* Animation for scrolling */
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(100%); /* Starts off-screen on the right */
+  }
+  100% {
+    transform: translateX(-100%); /* Moves to off-screen on the left */
+  }
+}
+
+
+
+
+
 
     /* Scoreboard Styling */
     .scoreboard {
@@ -59,7 +65,7 @@
       margin-top: 20px;
       border-radius: 10px;
       padding: 20px;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.9); /* Darker background */
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
     }
 
@@ -68,6 +74,7 @@
       justify-content: space-between;
       padding: 10px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background 0.3s ease;
     }
 
     .team:last-child {
@@ -76,13 +83,13 @@
 
     .team-name {
       font-size: 1.2em;
-      font-weight: bold;
-      color: #00FF00;
+      font-weight:bold;
+      color:#00FF00;
     }
 
     .team-points {
       font-weight: bold;
-      color: #FF0000;
+      color:#FF0000;
     }
 
     /* Admin Section Styling */
@@ -91,7 +98,7 @@
       bottom: 10px;
       right: 10px;
       width: 220px;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.9); /* Dark background */
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
@@ -100,7 +107,7 @@
     }
 
     .admin-section h2 {
-      color: #ffd700;
+      color: #ffd700; /* Gold color for headings */
       text-align: center;
       margin-bottom: 10px;
       font-size: 1em;
@@ -113,7 +120,7 @@
       margin: 8px 0;
       border: 1px solid #555;
       border-radius: 5px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1); /* Transparent input background */
       color: #fff;
       outline: none;
       box-sizing: border-box;
@@ -137,7 +144,7 @@
 
     .edit-section {
       margin-top: 10px;
-      display: none;
+      display: none; /* Hidden by default */
     }
 
     .edit-section input {
@@ -155,7 +162,7 @@
   </style>
 </head>
 <body>
-  <h1>GCEK GC Scoreboard</h1>
+  <h1>GCEK GC scoreboard</h1>
 
   <!-- Scoreboard -->
   <div class="scoreboard" id="scoreboard">
@@ -166,53 +173,38 @@
   <div class="admin-section" id="admin-section">
     <h2>Admin Login</h2>
     <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-    <button id="loginBtn">Login</button>
+    <button onclick="authenticateAdmin()">Login</button>
 
     <!-- Edit Section: Visible only after admin authentication -->
     <div id="edit-section" class="edit-section">
       <h2>Update Team Points</h2>
       <input type="text" id="teamName" placeholder="Team Name">
       <input type="number" id="teamPoints" placeholder="Total Points">
-      <button onclick="addOrUpdateTeamPoints()">Update Points</button>
+      <button onclick="addOrUpdatePoints()">Update Points</button>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Import Firestore and Firebase app functions
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
-    import { initializeApp } from "firebase/app";
-
-    // Firebase configuration for Firestore
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyIO2J7XzwCK-svzzKKrWxYYQMkCBzKrw",
-      authDomain: "gc-scoreboard.firebaseapp.com",
-      projectId: "gc-scoreboard",
-      storageBucket: "gc-scoreboard.firebasestorage.app",
-      messagingSenderId: "924218930461",
-      appId: "1:924218930461:web:58b334dbf85827cab75df4",
-      measurementId: "G-GZ8H00L5MM"
-    };
-
-    // Initialize Firebase and Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
+  <script>
+    // Initialize scoreboard and admin data
     const scoreboard = document.getElementById('scoreboard');
     const adminSection = document.getElementById('admin-section');
     const editSection = document.getElementById('edit-section');
-    const ADMIN_PASSWORD = 'ignite';
+    const ADMIN_PASSWORD = 'ignite'; // Set your admin password
 
-    // Render scoreboard (using Firestore)
-    async function renderScoreboard() {
-      const teams = await getScoreboard(); // Fetch teams from Firestore
+    // Load teams from Local Storage or use default teams
+    let teams = JSON.parse(localStorage.getItem('teams')) || [
+      { name: 'IT', points: 50 },
+      { name: 'ENTC', points: 40 },
+      { name: 'MECH', points: 30 },
+      { name: 'EE', points: 20 },
+      { name: 'Civil', points: 10 }
+    ];
 
-      // Clear previous content
-      scoreboard.innerHTML = '';
+    // Render scoreboard dynamically
+    function renderScoreboard() {
+      scoreboard.innerHTML = ''; // Clear previous content
+      teams.sort((a, b) => b.points - a.points); // Sort by points (descending)
 
-      // Sort and display the teams
-      teams.sort((a, b) => b.points - a.points);
-    
       teams.forEach((team, index) => {
         const teamDiv = document.createElement('div');
         teamDiv.className = 'team';
@@ -224,64 +216,51 @@
       });
     }
 
-    // Fetch scoreboard data from Firestore
-    async function getScoreboard() {
-      const teams = [];
-      const scoreboardRef = collection(db, "scoreboard");
-      const querySnapshot = await getDocs(scoreboardRef);
-
-      querySnapshot.forEach((doc) => {
-        teams.push({ name: doc.id, points: doc.data().points });
-      });
-
-      return teams;
-    }
-
     // Admin authentication
     function authenticateAdmin() {
       const password = document.getElementById('adminPassword').value;
+
       if (password === ADMIN_PASSWORD) {
-        editSection.style.display = 'block';
+        editSection.style.display = 'block'; // Show the edit section
         alert('Admin authenticated successfully.');
       } else {
         alert('Incorrect password. Access denied.');
       }
     }
 
-    // Update team points (Firestore)
-    async function addOrUpdateTeamPoints() {
+    // Update team points
+    function addOrUpdatePoints() {
       const teamName = document.getElementById('teamName').value.trim();
       const teamPoints = parseInt(document.getElementById('teamPoints').value);
 
+      // Validate inputs
       if (!teamName || isNaN(teamPoints)) {
         alert('Please fill out both fields correctly.');
         return;
       }
 
-      const teamRef = doc(db, "scoreboard", teamName);
-
-      try {
-        const docSnap = await getDoc(teamRef);
-        if (docSnap.exists()) {
-          // If the document exists, update points
-          await updateDoc(teamRef, { points: teamPoints });
-          alert(`${teamName}'s points have been updated to ${teamPoints}.`);
-        } else {
-          // If the document does not exist, create a new document with points
-          await setDoc(teamRef, { points: teamPoints });
-          alert(`${teamName} has been added with ${teamPoints} points.`);
-        }
-      } catch (error) {
-        console.error("Error updating team points:", error);
+      // Find team and update points
+      const team = teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
+      if (team) {
+        team.points = teamPoints; // Update points
+        alert(`${team.name}'s points have been updated to ${teamPoints}.`);
+      } else {
+        alert('Team not found. Please enter a valid team name.');
+        return;
       }
-      renderScoreboard();
+
+      saveToLocalStorage(); // Save updated data to Local Storage
+      renderScoreboard(); // Re-render the scoreboard
     }
 
-    // Event Listener for Login Button
-    document.getElementById('loginBtn').addEventListener('click', authenticateAdmin);
+    // Save teams data to Local Storage
+    function saveToLocalStorage() {
+      localStorage.setItem('teams', JSON.stringify(teams));
+    }
 
-    // Initial Setup
+    // Initial render
     renderScoreboard();
   </script>
 </body>
 </html>
+
