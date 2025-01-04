@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GCEK GC scoreboard</title>
+  <title>GCEK GC Scoreboard</title>
   <style>
     /* General Body Styling */
     body {
@@ -15,14 +15,14 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      background: url('college.png') no-repeat center center fixed; /* Background image */
+      background: url('college.png') no-repeat center center fixed;
       background-size: cover;
     }
 
     /* Header with special effects */
     h1 {
       margin-top: 10px;
-      color:#4169E1;
+      color: #4169E1;
       font-size: 1.5em;
       font-weight: bold;
       text-align: center;
@@ -68,7 +68,6 @@
       justify-content: space-between;
       padding: 10px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      transition: background 0.3s ease;
     }
 
     .team:last-child {
@@ -77,13 +76,13 @@
 
     .team-name {
       font-size: 1.2em;
-      font-weight:bold;
-      color:#00FF00;
+      font-weight: bold;
+      color: #00FF00;
     }
 
     .team-points {
       font-weight: bold;
-      color:#FF0000;
+      color: #FF0000;
     }
 
     /* Admin Section Styling */
@@ -156,16 +155,18 @@
   </style>
 </head>
 <body>
-  <h1>GCEK GC scoreboard</h1>
+  <h1>GCEK GC Scoreboard</h1>
 
   <!-- Scoreboard -->
-  <div class="scoreboard" id="scoreboard"></div>
+  <div class="scoreboard" id="scoreboard">
+    <!-- Teams and points will be dynamically inserted here -->
+  </div>
 
   <!-- Admin Panel -->
   <div class="admin-section" id="admin-section">
     <h2>Admin Login</h2>
     <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-    <button onclick="authenticateAdmin()">Login</button>
+    <button id="loginBtn">Login</button>
 
     <!-- Edit Section: Visible only after admin authentication -->
     <div id="edit-section" class="edit-section">
@@ -176,43 +177,43 @@
     </div>
   </div>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
   <script>
+    // Import the necessary Firestore functions
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
+
+    // Your Firebase configuration
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCyIO2J7XzwCK-svzzKKrWxYYQMkCBzKrw",
+      authDomain: "gc-scoreboard.firebaseapp.com",
+      projectId: "gc-scoreboard",
+      storageBucket: "gc-scoreboard.firebasestorage.app",
+      messagingSenderId: "924218930461",
+      appId: "1:924218930461:web:58b334dbf85827cab75df4",
+      measurementId: "G-GZ8H00L5MM"
     };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    // Admin password
-    const ADMIN_PASSWORD = 'ignite';
     const scoreboard = document.getElementById('scoreboard');
     const adminSection = document.getElementById('admin-section');
     const editSection = document.getElementById('edit-section');
+    const ADMIN_PASSWORD = 'ignite';
 
-    // Fetch data from Firebase
-    function fetchFromFirebase() {
-      firebase.database().ref('teams').on('value', snapshot => {
-        const teams = snapshot.val() || [];
-        renderScoreboard(teams);
-      });
-    }
+    // Render scoreboard function
+    async function renderScoreboard() {
+      const teams = await getScoreboard(); // Fetch teams from Firestore
 
-    // Render scoreboard
-    function renderScoreboard(teams) {
       scoreboard.innerHTML = '';
-      if (!teams) return;
-      const sortedTeams = Object.values(teams).sort((a, b) => b.points - a.points);
-      sortedTeams.forEach((team, index) => {
+
+      // Sort and display the teams
+      teams.sort((a, b) => b.points - a.points);
+      teams.forEach((team, index) => {
         const teamDiv = document.createElement('div');
         teamDiv.className = 'team';
         teamDiv.innerHTML = `
@@ -223,7 +224,50 @@
       });
     }
 
-    // Authenticate admin
+    // Function to add or update team points in Firestore
+    async function addOrUpdatePoints() {
+      const teamName = document.getElementById('teamName').value.trim();
+      const teamPoints = parseInt(document.getElementById('teamPoints').value);
+
+      if (!teamName || isNaN(teamPoints)) {
+        alert('Please fill out both fields correctly.');
+        return;
+      }
+
+      const teamRef = doc(db, "scoreboard", teamName); // Document reference for each team
+
+      try {
+        const docSnap = await getDoc(teamRef);
+        if (docSnap.exists()) {
+          // Update points if the document exists
+          await updateDoc(teamRef, { points: teamPoints });
+          alert(`${teamName}'s points have been updated to ${teamPoints}.`);
+        } else {
+          // Create a new document if it doesn't exist
+          await setDoc(teamRef, { points: teamPoints });
+          alert(`${teamName} has been added with ${teamPoints} points.`);
+        }
+      } catch (error) {
+        console.error("Error updating team points:", error);
+      }
+
+      renderScoreboard(); // Refresh scoreboard
+    }
+
+    // Function to fetch scoreboard data from Firestore
+    async function getScoreboard() {
+      const teams = [];
+      const scoreboardRef = collection(db, "scoreboard");
+      const querySnapshot = await getDocs(scoreboardRef);
+
+      querySnapshot.forEach((doc) => {
+        teams.push({ name: doc.id, points: doc.data().points });
+      });
+
+      return teams;
+    }
+
+    // Admin authentication function
     function authenticateAdmin() {
       const password = document.getElementById('adminPassword').value;
       if (password === ADMIN_PASSWORD) {
@@ -234,32 +278,10 @@
       }
     }
 
-    // Add or update team points
-    function addOrUpdatePoints() {
-      const teamName = document.getElementById('teamName').value.trim();
-      const teamPoints = parseInt(document.getElementById('teamPoints').value);
+    // Initial Setup
+    renderScoreboard();
 
-      if (!teamName || isNaN(teamPoints)) {
-        alert('Please fill out both fields correctly.');
-        return;
-      }
-
-      // Update points in Firebase
-      const teamRef = firebase.database().ref('teams').orderByChild('name').equalTo(teamName).limitToFirst(1);
-      teamRef.once('value').then(snapshot => {
-        const team = snapshot.val();
-        if (team) {
-          const teamKey = Object.keys(team)[0];
-          firebase.database().ref('teams/' + teamKey).update({ points: teamPoints });
-          alert(`${teamName}'s points updated to ${teamPoints}.`);
-        } else {
-          alert('Team not found.');
-        }
-      });
-    }
-
-    // Fetch data initially
-    fetchFromFirebase();
+    document.getElementById('loginBtn').addEventListener('click', authenticateAdmin);
   </script>
 </body>
 </html>
