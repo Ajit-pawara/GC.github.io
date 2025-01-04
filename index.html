@@ -173,19 +173,17 @@
       <h2>Update Team Points</h2>
       <input type="text" id="teamName" placeholder="Team Name">
       <input type="number" id="teamPoints" placeholder="Total Points">
-      <button onclick="addOrUpdatePoints()">Update Points</button>
+      <button onclick="addOrUpdateTeamPoints()">Update Points</button>
     </div>
   </div>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
-  <script>
-    // Import the necessary Firestore functions
+  <script type="module">
+    // Import Firestore and Firebase app functions
     import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
+    import { initializeApp } from "firebase/app";
 
-    // Your Firebase configuration
+    // Firebase configuration for Firestore
     const firebaseConfig = {
       apiKey: "AIzaSyCyIO2J7XzwCK-svzzKKrWxYYQMkCBzKrw",
       authDomain: "gc-scoreboard.firebaseapp.com",
@@ -196,7 +194,7 @@
       measurementId: "G-GZ8H00L5MM"
     };
 
-    // Initialize Firebase
+    // Initialize Firebase and Firestore
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -205,14 +203,16 @@
     const editSection = document.getElementById('edit-section');
     const ADMIN_PASSWORD = 'ignite';
 
-    // Render scoreboard function
+    // Render scoreboard (using Firestore)
     async function renderScoreboard() {
       const teams = await getScoreboard(); // Fetch teams from Firestore
 
+      // Clear previous content
       scoreboard.innerHTML = '';
 
       // Sort and display the teams
       teams.sort((a, b) => b.points - a.points);
+    
       teams.forEach((team, index) => {
         const teamDiv = document.createElement('div');
         teamDiv.className = 'team';
@@ -224,37 +224,7 @@
       });
     }
 
-    // Function to add or update team points in Firestore
-    async function addOrUpdatePoints() {
-      const teamName = document.getElementById('teamName').value.trim();
-      const teamPoints = parseInt(document.getElementById('teamPoints').value);
-
-      if (!teamName || isNaN(teamPoints)) {
-        alert('Please fill out both fields correctly.');
-        return;
-      }
-
-      const teamRef = doc(db, "scoreboard", teamName); // Document reference for each team
-
-      try {
-        const docSnap = await getDoc(teamRef);
-        if (docSnap.exists()) {
-          // Update points if the document exists
-          await updateDoc(teamRef, { points: teamPoints });
-          alert(`${teamName}'s points have been updated to ${teamPoints}.`);
-        } else {
-          // Create a new document if it doesn't exist
-          await setDoc(teamRef, { points: teamPoints });
-          alert(`${teamName} has been added with ${teamPoints} points.`);
-        }
-      } catch (error) {
-        console.error("Error updating team points:", error);
-      }
-
-      renderScoreboard(); // Refresh scoreboard
-    }
-
-    // Function to fetch scoreboard data from Firestore
+    // Fetch scoreboard data from Firestore
     async function getScoreboard() {
       const teams = [];
       const scoreboardRef = collection(db, "scoreboard");
@@ -267,7 +237,7 @@
       return teams;
     }
 
-    // Admin authentication function
+    // Admin authentication
     function authenticateAdmin() {
       const password = document.getElementById('adminPassword').value;
       if (password === ADMIN_PASSWORD) {
@@ -278,10 +248,40 @@
       }
     }
 
+    // Update team points (Firestore)
+    async function addOrUpdateTeamPoints() {
+      const teamName = document.getElementById('teamName').value.trim();
+      const teamPoints = parseInt(document.getElementById('teamPoints').value);
+
+      if (!teamName || isNaN(teamPoints)) {
+        alert('Please fill out both fields correctly.');
+        return;
+      }
+
+      const teamRef = doc(db, "scoreboard", teamName);
+
+      try {
+        const docSnap = await getDoc(teamRef);
+        if (docSnap.exists()) {
+          // If the document exists, update points
+          await updateDoc(teamRef, { points: teamPoints });
+          alert(`${teamName}'s points have been updated to ${teamPoints}.`);
+        } else {
+          // If the document does not exist, create a new document with points
+          await setDoc(teamRef, { points: teamPoints });
+          alert(`${teamName} has been added with ${teamPoints} points.`);
+        }
+      } catch (error) {
+        console.error("Error updating team points:", error);
+      }
+      renderScoreboard();
+    }
+
+    // Event Listener for Login Button
+    document.getElementById('loginBtn').addEventListener('click', authenticateAdmin);
+
     // Initial Setup
     renderScoreboard();
-
-    document.getElementById('loginBtn').addEventListener('click', authenticateAdmin);
   </script>
 </body>
 </html>
