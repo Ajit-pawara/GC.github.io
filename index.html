@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GCEK GC scoreboard</title>
   <style>
-    /* General Body Styling */
+    /* General Body Styling for Dark Mode */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -15,40 +15,48 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      background: url('college.png') no-repeat center center fixed; /* Background image */
+      background: url('college_dark.png') no-repeat center center fixed; /* Dark mode background */
       background-size: cover;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Light Mode Styling */
+    body.light-mode {
+      background: url('college_light.png') no-repeat center center fixed; /* Light mode background */
+      background-size: cover;
+      color: #000; /* Dark text for light mode */
     }
 
     /* Header with special effects */
     h1 {
-      margin-top: 10px; /* Reduced margin to move the text higher */
+      margin-top: 10px;
       color: #4169E1; /* Bright green text for high visibility */
-      font-size: 1.5em; /* Smaller font size for more compact text */
-      font-weight: bold; /* Bold text for emphasis */
+      font-size: 1.5em;
+      font-weight: bold;
       text-align: center;
-      background-color: #000000; /* Light black background */
-      border: 2px solid #2C2C2C; /* Light black border to match the background */
-      border-radius: 10px; /* Rounded corners for a smooth, clean look */
-      padding: 10px 20px; /* Reduced padding to make the box smaller */
-      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9); /* 3D box shadow */
-      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4); /* 3D text shadow */
-      white-space: nowrap; /* Prevents text from wrapping to the next line */
-      overflow: hidden; /* Hides text overflow */
-      display: inline-block; /* Keeps the box fixed while text scrolls */
-      position: relative; /* Ensures the box remains in place */
+      background-color: #000000;
+      border: 2px solid #2C2C2C;
+      border-radius: 10px;
+      padding: 10px 20px;
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9);
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      position: relative;
     }
 
     h1 span {
-      display: inline-block; /* Needed for the scrolling effect */
-      animation: scrollText 10s linear infinite; /* Animation for scrolling */
+      display: inline-block;
+      animation: scrollText 10s linear infinite;
     }
 
     @keyframes scrollText {
       0% {
-        transform: translateX(100%); /* Starts off-screen on the right */
+        transform: translateX(100%);
       }
       100% {
-        transform: translateX(-100%); /* Moves to off-screen on the left */
+        transform: translateX(-100%);
       }
     }
 
@@ -59,12 +67,20 @@
       margin-top: 20px;
       border-radius: 10px;
       padding: 20px;
-      background: rgba(0, 0, 0, 0.9); /* Darker background */
+      background: rgba(0, 0, 0, 0.9);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+      transition: background-color 0.3s ease;
+    }
+
+    /* Dark Mode Scoreboard */
+    body.light-mode .scoreboard {
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
     }
 
     .team {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       padding: 10px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -75,10 +91,18 @@
       border-bottom: none;
     }
 
+    .team-logo {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+
     .team-name {
       font-size: 1.2em;
       font-weight: bold;
       color: #00FF00;
+      display: flex;
+      align-items: center;
     }
 
     .team-points {
@@ -91,18 +115,25 @@
       position: fixed;
       bottom: 10px;
       left: 50%;
-      transform: translateX(-50%); /* Center the element */
+      transform: translateX(-50%);
       width: 220px;
-      background: rgba(0, 0, 0, 0.9); /* Dark background */
+      background: rgba(0, 0, 0, 0.9);
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
       color: #fff;
       font-size: 0.8em;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Light Mode Admin Section */
+    body.light-mode .admin-section {
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
     }
 
     .admin-section h2 {
-      color: #ffd700; /* Gold color for headings */
+      color: #ffd700;
       text-align: center;
       margin-bottom: 10px;
       font-size: 1em;
@@ -115,7 +146,7 @@
       margin: 8px 0;
       border: 1px solid #555;
       border-radius: 5px;
-      background: rgba(255, 255, 255, 0.1); /* Transparent input background */
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
       outline: none;
       box-sizing: border-box;
@@ -139,7 +170,7 @@
 
     .edit-section {
       margin-top: 10px;
-      display: none; /* Hidden by default */
+      display: none;
     }
 
     .edit-section input {
@@ -182,6 +213,11 @@
 <body>
   <h1>GCEK GC scoreboard</h1>
 
+  <!-- Dark Mode Toggle Button -->
+  <button onclick="toggleDarkMode()" id="darkModeToggle" style="position: absolute; top: 10px; right: 10px; background-color: #4169E1; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
+    Toggle Dark/Light Mode
+  </button>
+
   <!-- Scoreboard -->
   <div class="scoreboard" id="scoreboard">
     <!-- Teams and points will be dynamically inserted here -->
@@ -211,11 +247,11 @@
 
     // Load teams from Local Storage or use default teams
     let teams = JSON.parse(localStorage.getItem('teams')) || [
-      { name: 'IT', points: 50 },
-      { name: 'ENTC', points: 40 },
-      { name: 'MECH', points: 30 },
-      { name: 'EE', points: 20 },
-      { name: 'Civil', points: 10 }
+      { name: 'IT', points: 50, logo: 'it_logo.png' },
+      { name: 'ENTC', points: 40, logo: 'entc_logo.png' },
+      { name: 'MECH', points: 30, logo: 'mech_logo.png' },
+      { name: 'EE', points: 20, logo: 'ee_logo.png' },
+      { name: 'Civil', points: 10, logo: 'civil_logo.png' }
     ];
 
     // Render scoreboard dynamically
@@ -227,7 +263,10 @@
         const teamDiv = document.createElement('div');
         teamDiv.className = 'team';
         teamDiv.innerHTML = `
-          <span class="team-name">${index + 1}. ${team.name}</span>
+          <div class="team-name">
+            <img src="${team.logo}" alt="${team.name} logo" class="team-logo"> 
+            ${index + 1}. ${team.name}
+          </div>
           <span class="team-points">${team.points} pts</span>
         `;
         scoreboard.appendChild(teamDiv);
@@ -274,6 +313,11 @@
     // Save teams data to Local Storage
     function saveToLocalStorage() {
       localStorage.setItem('teams', JSON.stringify(teams));
+    }
+
+    // Toggle Dark/Light Mode
+    function toggleDarkMode() {
+      document.body.classList.toggle('light-mode');
     }
 
     // Initial render
