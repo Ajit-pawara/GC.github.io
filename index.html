@@ -20,43 +20,37 @@
     }
 
     /* Header with special effects */
+    h1 {
+      margin-top: 10px;
+      color:#4169E1;
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+      background-color: #000000;
+      border: 2px solid #2C2C2C;
+      border-radius: 10px;
+      padding: 10px 20px;
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9);
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      position: relative;
+    }
 
-h1 {
-  margin-top: 10px; /* Reduced margin to move the text higher */
-  color:#4169E1 ; /* Bright green text for high visibility */
-  font-size: 1.5em; /* Smaller font size for more compact text */
-  font-weight: bold; /* Bold text for emphasis */
-  text-align: center;
-  background-color: #000000; /* Light black background */
-  border: 2px solid #2C2C2C; /* Light black border to match the background */
-  border-radius: 10px; /* Rounded corners for a smooth, clean look */
-  padding: 10px 20px; /* Reduced padding to make the box smaller */
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(0, 0, 0, 0.9); /* 3D box shadow */
-  text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.4); /* 3D text shadow */
-  white-space: nowrap; /* Prevents text from wrapping to the next line */
-  overflow: hidden; /* Hides text overflow */
-  display: inline-block; /* Keeps the box fixed while text scrolls */
-  position: relative; /* Ensures the box remains in place */
-}
+    h1 span {
+      display: inline-block;
+      animation: scrollText 10s linear infinite;
+    }
 
-h1 span {
-  display: inline-block; /* Needed for the scrolling effect */
-  animation: scrollText 10s linear infinite; /* Animation for scrolling */
-}
-
-@keyframes scrollText {
-  0% {
-    transform: translateX(100%); /* Starts off-screen on the right */
-  }
-  100% {
-    transform: translateX(-100%); /* Moves to off-screen on the left */
-  }
-}
-
-
-
-
-
+    @keyframes scrollText {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
 
     /* Scoreboard Styling */
     .scoreboard {
@@ -65,7 +59,7 @@ h1 span {
       margin-top: 20px;
       border-radius: 10px;
       padding: 20px;
-      background: rgba(0, 0, 0, 0.9); /* Darker background */
+      background: rgba(0, 0, 0, 0.9);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
     }
 
@@ -98,7 +92,7 @@ h1 span {
       bottom: 10px;
       right: 10px;
       width: 220px;
-      background: rgba(0, 0, 0, 0.9); /* Dark background */
+      background: rgba(0, 0, 0, 0.9);
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
@@ -107,7 +101,7 @@ h1 span {
     }
 
     .admin-section h2 {
-      color: #ffd700; /* Gold color for headings */
+      color: #ffd700;
       text-align: center;
       margin-bottom: 10px;
       font-size: 1em;
@@ -120,7 +114,7 @@ h1 span {
       margin: 8px 0;
       border: 1px solid #555;
       border-radius: 5px;
-      background: rgba(255, 255, 255, 0.1); /* Transparent input background */
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
       outline: none;
       box-sizing: border-box;
@@ -144,7 +138,7 @@ h1 span {
 
     .edit-section {
       margin-top: 10px;
-      display: none; /* Hidden by default */
+      display: none;
     }
 
     .edit-section input {
@@ -165,9 +159,7 @@ h1 span {
   <h1>GCEK GC scoreboard</h1>
 
   <!-- Scoreboard -->
-  <div class="scoreboard" id="scoreboard">
-    <!-- Teams and points will be dynamically inserted here -->
-  </div>
+  <div class="scoreboard" id="scoreboard"></div>
 
   <!-- Admin Panel -->
   <div class="admin-section" id="admin-section">
@@ -184,28 +176,43 @@ h1 span {
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
   <script>
-    // Initialize scoreboard and admin data
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
+
+    // Admin password
+    const ADMIN_PASSWORD = 'ignite';
     const scoreboard = document.getElementById('scoreboard');
     const adminSection = document.getElementById('admin-section');
     const editSection = document.getElementById('edit-section');
-    const ADMIN_PASSWORD = 'ignite'; // Set your admin password
 
-    // Load teams from Local Storage or use default teams
-    let teams = JSON.parse(localStorage.getItem('teams')) || [
-      { name: 'IT', points: 29 },
-      { name: 'ENTC', points: 35 },
-      { name: 'MECH', points: 30 },
-      { name: 'EE', points: 25 },
-      { name: 'Civil', points: 38 }
-    ];
+    // Fetch data from Firebase
+    function fetchFromFirebase() {
+      firebase.database().ref('teams').on('value', snapshot => {
+        const teams = snapshot.val() || [];
+        renderScoreboard(teams);
+      });
+    }
 
-    // Render scoreboard dynamically
-    function renderScoreboard() {
-      scoreboard.innerHTML = ''; // Clear previous content
-      teams.sort((a, b) => b.points - a.points); // Sort by points (descending)
-
-      teams.forEach((team, index) => {
+    // Render scoreboard
+    function renderScoreboard(teams) {
+      scoreboard.innerHTML = '';
+      if (!teams) return;
+      const sortedTeams = Object.values(teams).sort((a, b) => b.points - a.points);
+      sortedTeams.forEach((team, index) => {
         const teamDiv = document.createElement('div');
         teamDiv.className = 'team';
         teamDiv.innerHTML = `
@@ -216,51 +223,43 @@ h1 span {
       });
     }
 
-    // Admin authentication
+    // Authenticate admin
     function authenticateAdmin() {
       const password = document.getElementById('adminPassword').value;
-
       if (password === ADMIN_PASSWORD) {
-        editSection.style.display = 'block'; // Show the edit section
+        editSection.style.display = 'block';
         alert('Admin authenticated successfully.');
       } else {
         alert('Incorrect password. Access denied.');
       }
     }
 
-    // Update team points
+    // Add or update team points
     function addOrUpdatePoints() {
       const teamName = document.getElementById('teamName').value.trim();
       const teamPoints = parseInt(document.getElementById('teamPoints').value);
 
-      // Validate inputs
       if (!teamName || isNaN(teamPoints)) {
         alert('Please fill out both fields correctly.');
         return;
       }
 
-      // Find team and update points
-      const team = teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
-      if (team) {
-        team.points = teamPoints; // Update points
-        alert(`${team.name}'s points have been updated to ${teamPoints}.`);
-      } else {
-        alert('Team not found. Please enter a valid team name.');
-        return;
-      }
-
-      saveToLocalStorage(); // Save updated data to Local Storage
-      renderScoreboard(); // Re-render the scoreboard
+      // Update points in Firebase
+      const teamRef = firebase.database().ref('teams').orderByChild('name').equalTo(teamName).limitToFirst(1);
+      teamRef.once('value').then(snapshot => {
+        const team = snapshot.val();
+        if (team) {
+          const teamKey = Object.keys(team)[0];
+          firebase.database().ref('teams/' + teamKey).update({ points: teamPoints });
+          alert(`${teamName}'s points updated to ${teamPoints}.`);
+        } else {
+          alert('Team not found.');
+        }
+      });
     }
 
-    // Save teams data to Local Storage
-    function saveToLocalStorage() {
-      localStorage.setItem('teams', JSON.stringify(teams));
-    }
-
-    // Initial render
-    renderScoreboard();
+    // Fetch data initially
+    fetchFromFirebase();
   </script>
 </body>
 </html>
-
